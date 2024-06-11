@@ -2,7 +2,41 @@
 
 namespace App\Http\Controllers;
 
-abstract class Controller
+use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+class Controller extends BaseController
 {
-    //
+    use AuthorizesRequests, ValidatesRequests;
+
+    /**
+     * @param string $message
+     * @param array $data
+     * @param string $status
+     *
+     * @return JsonResponse
+     */
+    public function successResponse(string $message, mixed $data = null, string $status = '200'): JsonResponse
+    {
+        return response()->json([
+            'message' => $message,
+            'data' => $data
+        ], $status);
+    }
+
+    /**
+     * @param string $message
+     * @param Exception|null $exception
+     *
+     * @return JsonResponse
+     */
+    public function failureResponse(string $message, ?Exception $exception = null): JsonResponse
+    {
+        return response()->json([
+            'message' => $message,
+        ], $exception->getCode());
+    }
 }
